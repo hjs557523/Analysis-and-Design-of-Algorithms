@@ -6,6 +6,8 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.Vector;
 
+import javax.lang.model.util.ElementScanner6;
+
 
 //public interface Comparable<T>
 //此接口强行对实现它的每个类对象进行整体排序。
@@ -210,7 +212,7 @@ public class Main {
      * param2: 优先级队列类型
      */
     public static void dijkstra(int s, int choose){
-        int vis[] = new int[maxn]; //标志数组,标志是否访问过该顶点
+        int vis[] = new int[maxn]; //值为1表示从源点s到该顶点的最短权值已经确定
         dis = new int[maxn];
         for (int i = 0; i < maxn; i++) {
             dis[i] = 2147483647;  //初始化起点到每个顶点的距离为无穷大
@@ -223,16 +225,16 @@ public class Main {
                 que.insert(new Edge(s, 0));
                 dis[s] = 0;
                 while (que.isEmpty() == false) {
-                    Edge now = que.remove();
+                    Edge now = que.remove();//算法选择当前队列中具有最短路估计的顶点u
                     int u = now.to;
                     if (dis[u] < now.cost) {
                         continue;
                     }
                     if (vis[u] == 1) {
-                        continue;
+                        continue;//已经在vis[]中了，退出当前循环
                     }
-                    vis[u] = 1;
-                    for (int i = 0; i < e.get(u).size(); i++) {
+                    vis[u] = 1;//将u加到vis[]中
+                    for (int i = 0; i < e.get(u).size(); i++) {//对顶点u的所有出边进行松弛
                         int next = e.get(u).get(i).to;
                         int cost = e.get(u).get(i).cost;
                         if ((vis[next] == 0) && (dis[next] > dis[u] + cost)){
@@ -302,10 +304,22 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("-------------------实验5:迪杰斯特拉算法优化------------------------");
+        System.out.println("----------------------实验5:迪杰斯特拉算法优化----------------------");
         System.out.println("请输入您采用的优先级队列类型,输入'0'为采用数组实现,输入'1'为最小堆实现");
         Scanner scan = new Scanner(System.in);
         int choose = scan.nextInt();
+        while (true) {
+            if (choose == 0) {
+                System.out.println("您选择了用 '数组' 来实现迪杰斯特拉算法");
+                break;
+            } else if (choose == 1) {
+                System.out.println("您选择用了 '最小堆' 来实现迪杰斯特拉算法");
+                break;
+            } else {
+                System.out.println("数字不符合要求,请重新输入。输入'0'为采用数组实现,输入'1'为最小堆实现");
+                choose = scan.nextInt();
+            }
+        }
         e = new ArrayList<ArrayList<Edge>>();
         for (int i = 0; i < maxn; i++) {
             ArrayList<Edge> temp = new ArrayList<Edge>();
@@ -333,7 +347,7 @@ public class Main {
 }
 
 /**
- * 测试用例
+ * 测试用例1：
  * 0
  * 5 10 0
  * 0 1 10
@@ -347,4 +361,17 @@ public class Main {
  * 4 0 7
  * 4 2 6
  * 
+ * 测试用例2：
+ * 1
+ * 7 10 0
+ * 0 1 13
+ * 0 2 8
+ * 0 4 30
+ * 0 6 32
+ * 1 5 9
+ * 1 6 7
+ * 2 3 5
+ * 3 4 6
+ * 4 5 2
+ * 5 6 17
  */
