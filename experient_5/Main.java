@@ -202,9 +202,10 @@ class heapPriorityQueue {
 
 public class Main {
     static int maxn = 100; // 可输入的最大顶点个数
-    static int[] l;
+    //static int[] l;
     static int[] dis; // 存放从起点到各个顶点最短路径距离
     static ArrayList<ArrayList<Edge>> e;// 每个顶点的出边集合
+    static ArrayList<ArrayList<Integer>> path; //从源点到每个终点的最短路径
 
     /**
      * 迪杰斯特拉算法
@@ -224,8 +225,9 @@ public class Main {
                 ArrPriorityQueue que = new ArrPriorityQueue(maxn);
                 que.insert(new Edge(s, 0));
                 dis[s] = 0;
+                //path.get(s).add(s);
                 while (que.isEmpty() == false) {
-                    Edge now = que.remove();//算法选择当前队列中具有最短路估计的顶点u
+                    Edge now = que.remove();//算法选择当前队列中具有最短路径估计的顶点u
                     int u = now.to;
                     if (dis[u] < now.cost) {
                         continue;
@@ -239,9 +241,16 @@ public class Main {
                         int cost = e.get(u).get(i).cost;
                         if ((vis[next] == 0) && (dis[next] > dis[u] + cost)){
                             dis[next] = dis[u] + cost;
+
+                            //最短路径中间过程更新操作
+                            if (path.get(next).size() > 0) {
+                                path.get(next).clear();
+                                path.get(next).addAll(path.get(u));
+                                path.get(next).add(next);
+                            }
+
                             que.insert(new Edge(next, dis[next]));
                         }
-                        
                     }
                 }
                 break;
@@ -265,6 +274,14 @@ public class Main {
                         int cost = e.get(u).get(i).cost;
                         if ((vis[next] == 0) && (dis[next] > dis[u] + cost)){
                             dis[next] = dis[u] + cost;
+
+                            //最短路径中间过程更新操作
+                            if (path.get(next).size() > 0) {
+                                path.get(next).clear();
+                                path.get(next).addAll(path.get(u));
+                                path.get(next).add(next);
+                            }
+
                             que2.insert(new Edge(next, dis[next]));
                         }
                     }
@@ -304,16 +321,18 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("----------------------实验5:迪杰斯特拉算法优化----------------------");
+        System.out.println("-----------------------实验5:迪杰斯特拉算法优化-----------------------");
         System.out.println("请输入您采用的优先级队列类型,输入'0'为采用数组实现,输入'1'为最小堆实现");
         Scanner scan = new Scanner(System.in);
         int choose = scan.nextInt();
         while (true) {
             if (choose == 0) {
-                System.out.println("您选择了用 '数组' 来实现迪杰斯特拉算法");
+                System.out.println("----------------您选择了用 '数组' 来实现迪杰斯特拉算法----------------");
+                System.out.println();
                 break;
             } else if (choose == 1) {
-                System.out.println("您选择用了 '最小堆' 来实现迪杰斯特拉算法");
+                System.out.println("---------------您选择用了 '最小堆' 来实现迪杰斯特拉算法---------------");
+                System.out.println();
                 break;
             } else {
                 System.out.println("数字不符合要求,请重新输入。输入'0'为采用数组实现,输入'1'为最小堆实现");
@@ -321,15 +340,24 @@ public class Main {
             }
         }
         e = new ArrayList<ArrayList<Edge>>();
+        path = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < maxn; i++) {
             ArrayList<Edge> temp = new ArrayList<Edge>();
             e.add(temp);
         }
+
         System.out.println("请您依次输入有向图的图中顶点个数、图中有向边条数、以及你选定的起点下标");
         int n = scan.nextInt(); // 图中顶点个数
         int m = scan.nextInt(); // 图中有向边条数
         int s = scan.nextInt(); // 起点下标
-        l = new int[maxn];
+        //l = new int[maxn];
+
+        for (int j = 0; j < n; j++) {
+            ArrayList<Integer> item = new ArrayList<Integer>();
+            item.add(s);
+            path.add(item);
+        }
+
         System.out.println("请您依次输入每条有向边的起始顶点、目标顶点、以及该有向边的权重大小");
         for (int i = 0; i < m; i++) {
             int from = scan.nextInt(); // 该有向边起点
@@ -340,14 +368,14 @@ public class Main {
 
         dijkstra(s,choose);
         for (int i = 0; i < n; i++) {
-            System.out.println("起点 " + s + " 到目的点 " + i + " 的最短距离为: " + dis[i]);
+            System.out.println("起点 " + s + " 到目的点 " + i + " 的最短距离为: " + dis[i]+", 路径为:"+path.get(i));
         }
         scan.close();
     }
 }
 
 /**
- * 测试用例1：
+ * hjs的测试用例1：
  * 0
  * 5 10 0
  * 0 1 10
@@ -361,7 +389,7 @@ public class Main {
  * 4 0 7
  * 4 2 6
  * 
- * 测试用例2：
+ * hjs的测试用例2：
  * 1
  * 7 10 0
  * 0 1 13
